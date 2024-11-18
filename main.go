@@ -39,6 +39,23 @@ func (n *Node) linearSearch(value int) *Node {
 	return nil
 }
 
+func (n *Node) popLastNode() Node {
+	if n.next == nil {
+		curr := *n
+
+		n = nil
+
+		return curr
+	}
+	if n.next.next == nil {
+		next := *n.next
+		n.next = nil
+		return next
+	} else {
+		return n.next.popLastNode()
+	}
+}
+
 // Return's appended Node
 // Linear Append O(n)
 func (n *Node) appendToEnd(value int) *Node {
@@ -84,6 +101,29 @@ func (n *DoublyLinkedNode) printAll() {
 	}
 }
 
+type LinkedListStack struct {
+	node *Node
+}
+
+func (s *LinkedListStack) push(value int) {
+	s.node.appendToEnd(value)
+}
+
+type StackError struct {
+	message string
+}
+
+func (s StackError) Error() string {
+	return s.message
+}
+
+func (s *LinkedListStack) pop() (Node, error) {
+	if s.node == nil {
+		return *newNode(0, nil), StackError{"Stack is empty"}
+	}
+	return s.node.popLastNode(), nil
+}
+
 func main() {
 	node := newNode(1, newNode(2, newNode(3, nil)))
 	node.printAll()
@@ -91,7 +131,7 @@ func main() {
 	node.appendToEnd(4)
 	node.printAll()
 
-	fmt.Println("Doubly Linked List")
+	fmt.Println("[*] Doubly Linked List")
 
 	dNode := &DoublyLinkedNode{
 		value: 1,
@@ -102,4 +142,20 @@ func main() {
 	dNode.appendToEnd(2)
 
 	dNode.printAll()
+
+	fmt.Println("[*] Stack")
+	stack := LinkedListStack{
+		node: newNode(1, nil),
+	}
+
+	stack.push(2)
+	stack.push(3)
+
+	val, err := stack.pop()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(val.value)
 }

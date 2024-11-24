@@ -102,11 +102,12 @@ func (n *DoublyLinkedNode) printAll() {
 }
 
 type LinkedListStack struct {
-	node *Node
+	head *Node
 }
 
 func (s *LinkedListStack) push(value int) {
-	s.node.appendToEnd(value)
+	new_node := newNode(value, s.head)
+	s.head = new_node
 }
 
 type StackError struct {
@@ -118,10 +119,11 @@ func (s StackError) Error() string {
 }
 
 func (s *LinkedListStack) pop() (Node, error) {
-	if s.node == nil {
-		return *newNode(0, nil), StackError{"Stack is empty"}
-	}
-	return s.node.popLastNode(), nil
+	poped := *s.head
+
+	s.head = s.head.next
+
+	return poped, nil
 }
 
 func main() {
@@ -145,17 +147,19 @@ func main() {
 
 	fmt.Println("[*] Stack")
 	stack := LinkedListStack{
-		node: newNode(1, nil),
+		head: newNode(1, nil),
 	}
 
 	stack.push(2)
 	stack.push(3)
 
-	val, err := stack.pop()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	stack.head.printAll()
+
+	val, _ := stack.pop()
+	val2, _ := stack.pop()
+	val3, _ := stack.pop()
 
 	fmt.Println(val.value)
+	fmt.Println(val2.value)
+	fmt.Println(val3.value)
 }

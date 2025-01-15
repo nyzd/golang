@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Node struct {
 	value int
@@ -54,6 +56,21 @@ func (n *Node) popLastNode() Node {
 	} else {
 		return n.next.popLastNode()
 	}
+}
+
+func (n *Node) reverse() *Node {
+	curr := n
+	var prev *Node = nil
+
+	for curr != nil {
+		next := curr.next
+		curr.next = prev
+
+		prev = curr
+		curr = next
+	}
+
+	return prev
 }
 
 // Return's appended Node
@@ -126,12 +143,52 @@ func (s *LinkedListStack) pop() (Node, error) {
 	return poped, nil
 }
 
+type Queue struct {
+	data    [10]int
+	head    int
+	tail    int
+	last_op int8
+}
+
+func (q *Queue) enqueue(element int) {
+	if q.tail == q.head && q.last_op == 0 {
+		panic("Queue is full")
+	}
+
+	q.data[q.tail] = element
+	if q.tail == 10-1 {
+		q.tail = 0
+	} else {
+		q.tail += 1
+	}
+
+	q.last_op = 0
+}
+
+func (q *Queue) dequeue() int {
+	if q.tail == q.head && q.last_op == 1 {
+		panic("Queue is empty")
+	}
+
+	o := q.data[q.head]
+
+	q.data[q.head] = 0
+	q.head += 1
+
+	q.last_op = 1
+
+	return o
+}
+
 func main() {
 	node := newNode(1, newNode(2, newNode(3, nil)))
 	node.printAll()
 	fmt.Println("-----")
 	node.appendToEnd(4)
 	node.printAll()
+
+	fmt.Println("[* LL] Reversed.")
+	node.reverse().printAll()
 
 	fmt.Println("[*] Doubly Linked List")
 
@@ -162,4 +219,12 @@ func main() {
 	fmt.Println(val.value)
 	fmt.Println(val2.value)
 	fmt.Println(val3.value)
+
+	fmt.Println("[*] Queue")
+
+	q := Queue{data: [10]int{}, head: 0, tail: 0, last_op: 1}
+
+	q.enqueue(5)
+
+	fmt.Println(q.data)
 }
